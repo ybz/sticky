@@ -64,23 +64,22 @@
           var newTop = documentHeight - s.stickyElement.outerHeight()
             - s.topSpacing - s.bottomSpacing - scrollTop - extra;
           if (newTop < 0) {
-            console.log('IF newTop < 0', newTop);
             newTop = newTop + s.topSpacing;
           } else {
-            console.log('ELSE newTop < 0', newTop);
             if (isElementOverflowing) {
+              // element is bigger than window
               var targetTop, distanceToTarget;
-              console.log('itemOverflows, currentTop: ', s.currentTop, scrollDirection);
               if (scrollDirection > 0) {
+                // scrolling down, stick to bottom of element
                 targetTop = -1 * overflowSize + s.topSpacing;
               } else {
+                // scrolling up, stick to top of element
                 targetTop = s.topSpacing;
               }
               distanceToTarget = targetTop - s.currentTop;
-              console.log('targetTop:', targetTop, 'distanceToTarget: ', distanceToTarget, 'scrollDistance', scrollDistance);
               if (Math.abs(distanceToTarget) > 50 && scrollDistance < 200) {
+                // if slow scroll or close to target, compensate the amount scrolled
                 var movement = Math.floor(-1 * distanceToTarget * Math.abs(scrollDistance) / Math.abs(distanceToTarget));
-                console.log('movement: ', movement);
                 newTop = s.currentTop - movement;
               } else {
                 newTop = targetTop;
@@ -90,7 +89,6 @@
             }
           }
           if (s.currentTop != newTop) {
-            console.log('new top change');
             s.stickyElement
               .css('position', 'fixed')
               .css('top', newTop);
