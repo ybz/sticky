@@ -17,6 +17,7 @@
   var defaults = {
       topSpacing: 0,
       bottomSpacing: 0,
+      bottomOverflowMargin: 20,
       className: 'is-sticky',
       wrapperClassName: 'sticky-wrapper',
       center: false,
@@ -41,7 +42,12 @@
       for (var i = 0; i < sticked.length; i++) {
         var s = sticked[i],
           elementTop = s.stickyWrapper.offset().top,
-          etse = elementTop - s.topSpacing - extra;
+          etse = elementTop - s.topSpacing - extra,
+          elementHeight = s.stickyElement.outerHeight(),
+          overflowSize = -1 * (windowHeight - s.topSpacing - elementHeight - s.bottomOverflowMargin),
+          isElementOverflowing = overflowSize > 0;
+
+        console.log('overflowSize', overflowSize);
 
         if (scrollTop <= etse) {
           if (s.currentTop !== null) {
@@ -56,11 +62,25 @@
           var newTop = documentHeight - s.stickyElement.outerHeight()
             - s.topSpacing - s.bottomSpacing - scrollTop - extra;
           if (newTop < 0) {
+            console.log('IF newTop < 0', newTop);
             newTop = newTop + s.topSpacing;
           } else {
-            newTop = s.topSpacing;
+            console.log('ELSE newTop < 0', newTop);
+            if (isElementOverflowing) {
+              var targetTop;
+              if (scrollDirection > 0) {
+                targetTop = newTop - overflowSize;
+              } else {
+                targetTop = newTop + overflowSize;
+              }
+              console.log('itemOverflows, targetTop:', targetTop, scrollDirection);
+              newTop = s.topSpacing;
+            } else {
+              newTop = s.topSpacing;
+            }
           }
           if (s.currentTop != newTop) {
+            console.log('new top change');
             s.stickyElement
               .css('position', 'fixed')
               .css('top', newTop);
@@ -111,6 +131,7 @@
           sticked.push({
             topSpacing: o.topSpacing,
             bottomSpacing: o.bottomSpacing,
+            bottomOverflowMargin: o.bottomOverflowMargin,
             stickyElement: stickyElement,
             currentTop: null,
             stickyWrapper: stickyWrapper,
