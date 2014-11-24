@@ -11,6 +11,9 @@
 //       might need to adjust the width in some cases.
 
 (function($) {
+  var scrollDirection = 1;
+  var lastPos;
+
   var defaults = {
       topSpacing: 0,
       bottomSpacing: 0,
@@ -29,6 +32,11 @@
         documentHeight = $document.height(),
         dwh = documentHeight - windowHeight,
         extra = (scrollTop > dwh) ? dwh - scrollTop : 0;
+      if (lastPos) {
+        scrollDirection = scrollTop - lastPos > 0 ? 1 : -1;
+      }
+      console.log('scrollTop ', scrollTop, 'direction: ', scrollDirection);
+      lastPos = scrollTop;
 
       for (var i = 0; i < sticked.length; i++) {
         var s = sticked[i],
