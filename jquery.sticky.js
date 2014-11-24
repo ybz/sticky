@@ -12,7 +12,8 @@
 
 (function($) {
   var scrollDirection = 1;
-  var lastPos;
+  var scrollDistance = 0;
+  var prevScrollTop;
 
   var defaults = {
       topSpacing: 0,
@@ -33,11 +34,12 @@
         documentHeight = $document.height(),
         dwh = documentHeight - windowHeight,
         extra = (scrollTop > dwh) ? dwh - scrollTop : 0;
-      if (lastPos) {
-        scrollDirection = scrollTop - lastPos > 0 ? 1 : -1;
+      if (prevScrollTop) {
+        scrollDirection = scrollTop - prevScrollTop > 0 ? 1 : -1;
+        scrollDistance = Math.abs(scrollTop - prevScrollTop);
       }
       console.log('scrollTop ', scrollTop, 'direction: ', scrollDirection);
-      lastPos = scrollTop;
+      prevScrollTop = scrollTop;
 
       for (var i = 0; i < sticked.length; i++) {
         var s = sticked[i],
@@ -67,14 +69,22 @@
           } else {
             console.log('ELSE newTop < 0', newTop);
             if (isElementOverflowing) {
-              var targetTop;
+              var targetTop, distanceToTarget;
+              console.log('itemOverflows, currentTop: ', s.currentTop, scrollDirection);
               if (scrollDirection > 0) {
-                targetTop = newTop - overflowSize;
+                targetTop = -1 * overflowSize + s.topSpacing;
               } else {
-                targetTop = newTop + overflowSize;
+                targetTop = s.topSpacing;
               }
-              console.log('itemOverflows, targetTop:', targetTop, scrollDirection);
-              newTop = s.topSpacing;
+              distanceToTarget = targetTop - s.currentTop;
+              console.log('targetTop:', targetTop, 'distanceToTarget: ', distanceToTarget, 'scrollDistance', scrollDistance);
+              if (Math.abs(distanceToTarget) > 50 && scrollDistance < 200) {
+                var movement = Math.floor(-1 * distanceToTarget * Math.abs(scrollDistance) / Math.abs(distanceToTarget));
+                console.log('movement: ', movement);
+                newTop = s.currentTop - movement;
+              } else {
+                newTop = targetTop;
+              }
             } else {
               newTop = s.topSpacing;
             }
