@@ -18,7 +18,7 @@
   var defaults = {
       topSpacing: 0,
       bottomSpacing: 0,
-      bottomOverflowMargin: 20,
+      bottomOverflowMargin: 0,
       className: 'is-sticky',
       wrapperClassName: 'sticky-wrapper',
       center: false,
@@ -38,7 +38,6 @@
         scrollDirection = scrollTop - prevScrollTop > 0 ? 1 : -1;
         scrollDistance = Math.abs(scrollTop - prevScrollTop);
       }
-      console.log('scrollTop ', scrollTop, 'direction: ', scrollDirection);
       prevScrollTop = scrollTop;
 
       for (var i = 0; i < sticked.length; i++) {
@@ -48,8 +47,6 @@
           elementHeight = s.stickyElement.outerHeight(),
           overflowSize = -1 * (windowHeight - s.topSpacing - elementHeight - s.bottomOverflowMargin),
           isElementOverflowing = overflowSize > 0;
-
-        console.log('overflowSize', overflowSize);
 
         if (scrollTop <= etse) {
           if (s.currentTop !== null) {
@@ -78,7 +75,7 @@
               }
               distanceToTarget = targetTop - s.currentTop;
               if (Math.abs(distanceToTarget) > 50 && scrollDistance < 200) {
-                // if slow scroll or close to target, compensate the amount scrolled
+                // if slow scroll and not close to target, compensate the amount scrolled
                 var movement = Math.floor(-1 * distanceToTarget * Math.abs(scrollDistance) / Math.abs(distanceToTarget));
                 newTop = s.currentTop - movement;
               } else {
